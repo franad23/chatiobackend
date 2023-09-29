@@ -1,12 +1,23 @@
 import express from "express";
 import { createServer } from "http";
 import { Server as SocketServer } from "socket.io";
+import cors from 'cors'
+import morgan from "morgan";
+
+//Routes
+import AuthRoutes from "./routes/auth.routes";
 
 //Interfaces
 import { UserSocket } from "./interfaces/userSocket";
 
 const app = express();
 const httpServer = createServer(app);
+app.use(cors({
+  origin: "http://localhost:5173",
+  credentials: true
+}));
+app.use(express.json());
+app.use(morgan('dev'));
 
 const io = new SocketServer(httpServer, {
   cors: {
@@ -48,5 +59,7 @@ io.on("connection", (socket) => {
   });
   console.log(connectedUsers);
 });
+
+app.use("/api", AuthRoutes);
 
 export default httpServer;
