@@ -48,7 +48,11 @@ export const loginUser = async (req: Request, res: Response) => {
         expiresIn: 60*60*24
       })
       res.json({
-        token
+        token,
+        profile: {
+          id: userFound._id,
+          username:userFound.username
+        }
       })
 
   } catch (error) {
