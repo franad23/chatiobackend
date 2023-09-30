@@ -3,6 +3,7 @@ import UserModel from "../models/User";
 import bcrypt from "bcryptjs";
 import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
+import { connectedUsers } from "../app";
 
 dotenv.config();
 
@@ -40,6 +41,7 @@ export const loginUser = async (req: Request, res: Response) => {
   try {
     const isMatch = await bcrypt.compare(password, userFound.password);
     if (!isMatch) return res.status(400).json({ message: "Usuario o contraseña incorrectos"});
+    if(connectedUsers.some(user => user.user.id === userFound._id.toString())) return res.status(400).json({ message: "El usuario ya esta conectado"})
 
     const token = jwt.sign(
       {userFound}, 

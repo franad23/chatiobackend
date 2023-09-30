@@ -1,4 +1,7 @@
 export interface UserSocket {
-  user: string,
+  user: {
+    id: string,
+    username: string,
+  },
   socketId: string,
 }

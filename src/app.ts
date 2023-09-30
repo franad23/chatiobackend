@@ -1,6 +1,7 @@
 import express from "express";
 import { createServer } from "http";
 import { Server as SocketServer } from "socket.io";
+import http from "http";
 import cors from 'cors'
 import morgan from "morgan";
 
@@ -11,7 +12,7 @@ import AuthRoutes from "./routes/auth.routes";
 import { UserSocket } from "./interfaces/userSocket";
 
 const app = express();
-const httpServer = createServer(app);
+const httpServer = http.createServer(app);
 app.use(cors({
   origin: "http://localhost:5173",
   credentials: true
@@ -21,18 +22,20 @@ app.use(morgan('dev'));
 
 const io = new SocketServer(httpServer, {
   cors: {
-    origin: "http://localhost:5173/",                
+    origin: "http://localhost:5173",                
   }
 });
 
-const connectedUsers: UserSocket[] = []; // Array para almacenar usuarios conectados
+export const connectedUsers: UserSocket[] = [];
 
 io.on("connection", (socket) => {
   const customUserId = socket.handshake.auth.customUserId;
-  // socket.id = customUserId;
 
   const user: UserSocket = {
-    user: customUserId,
+    user: {
+      id: customUserId.id,
+      username: customUserId.username,
+    },
     socketId: socket.id,
   };
   connectedUsers.push(user);
