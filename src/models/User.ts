@@ -1,5 +1,8 @@
 import { prop, getModelForClass } from "@typegoose/typegoose";
 
+//Interfaces
+import { UserContact } from "../interfaces/UserContact";
+
 class User {
   @prop({ required: true, unique: true })
   username: string;
@@ -8,10 +11,9 @@ class User {
   password: string;
 
   @prop({ required: true })
-  contacts: object[];
+  contacts: UserContact[];
 }
 
 
 const UserModel = getModelForClass(User);
-
 export default UserModel;
