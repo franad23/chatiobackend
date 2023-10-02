@@ -44,7 +44,8 @@ export const loginUser = async (req: Request, res: Response) => {
     if(connectedUsers.some(user => user.user.id === userFound._id.toString())) return res.status(400).json({ message: "El usuario ya esta conectado"})
 
     const token = jwt.sign(
-      {userFound}, 
+      {_id: userFound._id,
+      username: userFound.username}, 
       process.env.JWT_SECRET as string,
       {
         expiresIn: 60*60*24

@@ -15,7 +15,7 @@ export const authToken = (req: Request, res: Response, next: NextFunction) => {
 
   jwt.verify(token, process.env.JWT_SECRET as string, (err, decoded) => {
     if(err) return res.status(401).json({ message: "Token no válido"})
-    req.body.user = decoded;
+    req.username = decoded;
     next();
   })
   

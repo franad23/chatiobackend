@@ -1,5 +1,5 @@
 export interface UserContact {
-  id: string,
+  _id: string,
   username: string,
   isAccepted: boolean,
 }

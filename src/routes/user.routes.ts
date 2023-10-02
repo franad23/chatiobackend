@@ -1,10 +1,15 @@
 import { Router } from "express";
 
 //Controllers
-import { getContacts } from "../controllers/usercontacts.controller";
+import { getContacts, addContact } from "../controllers/usercontacts.controller";
+
+//Middlewares
+import { authToken } from "../middlewares/auth.middleware";
 
 const router = Router();
 
-router.get("/contacts", getContacts);
+router.get("/contacts", authToken, getContacts);
+router.patch("/contacts", authToken, addContact);
+
 
 export default router;
