@@ -30,7 +30,7 @@ export const addContact = async (req: Request, res: Response) => {
   const { _id, username } = req.body;
 
   const userLoggedFound = await UserModel.findById(userLogged._id);
-  if(userLoggedFound.contacts.some(contact => contact._id == _id)) return res.status(400).json({message: "Contacto ya agregado"})
+  if(userLoggedFound?.contacts.some(contact => contact._id == _id)) return res.status(400).json({message: "Contacto ya agregado"})
 
   try {
     const updatedUserLogged = await UserModel.findByIdAndUpdate(
@@ -71,4 +71,19 @@ export const addContact = async (req: Request, res: Response) => {
   }
 };
 
-
+export const getContactsToAccept = async (req: Request, res: Response) => {
+  const userLogged = req.username;
+  try {
+    const userContacts = await UserModel.findById(userLogged._id);
+    const contactsNotAccepted = userContacts?.contacts.filter(contact => contact.isAccepted == false);
+    // const contactsNotAccepted 
+    if (contactsNotAccepted?.length == 0) {
+      res.status(404).json({ message: "No tienes conectatos para aceptar" });
+      return; 
+    }
+    res.status(200).json(contactsNotAccepted);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Error en el servidor" });
+  }
+}

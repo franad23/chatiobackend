@@ -64,7 +64,7 @@ io.on("connection", (socket) => {
       io.emit("connectedUsers", connectedUsers);
     }
   });
-  console.log(connectedUsers);
+  // console.log(connectedUsers);
 });
 
 app.use("/api", AuthRoutes);
