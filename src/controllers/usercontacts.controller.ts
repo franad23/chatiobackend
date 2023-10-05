@@ -92,53 +92,57 @@ export const getContactsToAccept = async (req: Request, res: Response) => {
 export const contactAccepted = async (req: Request, res: Response) => {
   const userLogged = req.username;
   const { _id, username, isAccepted } = req.body;
-
-  if (isAccepted) {
-    // Actualiza el campo isAccepted a true si isAccepted es verdadero
-    try {
-      await UserModel.findOneAndUpdate(
-        {
-          _id: userLogged._id,
-          'contacts._id': _id, // Encuentra el contacto por su _id
-        },
-        {
-          $set: {
-            'contacts.$.isAccepted': true, // Actualiza el campo isAccepted en el contacto
-          },
-        },
-        { new: true }
-      );
-      res.status(200).json({ message: "Contacto aceptado exitosamente" });
-    } catch (error) {
-      console.log(error);
-      res.status(500).json({ message: "Error en el servidor" });
-    }
-  } else {
-    // Resto de tu código original para manejar el caso cuando isAccepted es false
-    // ...
+  
+  try {
     if (!isAccepted) {
+      await UserModel.findByIdAndUpdate(
+        userLogged._id,
+        {
+          $pull: {
+            contacts: { _id: _id },
+          },
+        }
+      );
+
       const userContactsNotAccepted = await ContactsNotAcceptedModel.findByIdAndUpdate(
-        userLogged._id, {
+        userLogged._id,
+        {
           $push: {
             contactsNotAccepted: {
               _id: _id,
             },
           },
         }
-      )
+      );
+
       if (!userContactsNotAccepted) {
-        try {
-          const newUser = new ContactsNotAcceptedModel({
-            _id: userLogged._id,
-            contactsNotAccepted: [{ _id: _id }]
-          })
-          await newUser.save()
-          res.json({ message: "Contacto no aceptado" })
-        } catch (error) {
-          console.log(error);
-          res.status(500).json({ message: "Error en el servidor" });
-        }
+        const newUser = new ContactsNotAcceptedModel({
+          _id: userLogged._id,
+          contactsNotAccepted: [{ _id: _id }],
+        });
+
+        await newUser.save();
       }
+      
+      res.json({ message: "Contacto no aceptado" });
+    } else {
+      await UserModel.findOneAndUpdate(
+        {
+          _id: userLogged._id,
+          'contacts._id': _id,
+        },
+        {
+          $set: {
+            'contacts.$.isAccepted': true,
+          },
+        },
+        { new: true }
+      );
+
+      res.status(200).json({ message: "Contacto aceptado exitosamente" });
     }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Error en el servidor" });
   }
 };
