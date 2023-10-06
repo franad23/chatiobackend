@@ -146,3 +146,15 @@ export const contactAccepted = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Error en el servidor" });
   }
 };
+
+export const getUserContactsAccepted = async (req: Request, res: Response) => {
+  const userLogged = req.username;
+  try {
+    const userFound = await UserModel.findById(userLogged._id);
+    if (!userFound) return res.status(404).json({ message: "Usuario no encontrado"});
+    res.status(200).json(userFound.contacts.filter(contact => contact.isAccepted == true));
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Error en el servidor" });
+  }
+}
